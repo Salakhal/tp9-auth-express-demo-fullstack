@@ -51,113 +51,38 @@
 | bcrypt | Hachage mots de passe |
 
 ---
-
-## 📁 Architecture du projet
-```
-
-tp9-auth-express-demo/
-│
-├── 📂 config/                          # Configuration des services
-│   ├── db.js                          # Connexion MongoDB
-│   └── redis.js                       # Session store (MemoryStore pour dev)
-│
-├── 📂 controllers/                     # Logique métier (Contrôleurs)
-│   └── authController.js              # Gestion authentification (JWT + Sessions)
-│
-├── 📂 middlewares/                     # Middlewares Express
-│   ├── auth.js                        # Authentification & autorisation
-│   ├── errorHandler.js                # Gestion centralisée des erreurs
-│   └── validation.js                  # Validation des entrées utilisateur
-│
-├── 📂 models/                          # Modèles MongoDB (ODM Mongoose)
-│   └── User.js                        # Schéma utilisateur avec bcrypt
-│
-├── 📂 routes/                          # Routes de l'API
-│   └── authRoutes.js                  # Endpoints authentification
-│
-├── 📂 utils/                           # Utilitaires et helpers
-│   ├── tokenUtils.js                  # Génération/vérification JWT
-│   └── security.js                    # Fonctions sécurité (XSS, validation)
-│
-├── 📂 public/                          # Interface web frontend (optionnel)
-│   └── index.html                     # Interface utilisateur minimaliste
-│
-├── 📂 node_modules/                    # Dépendances npm (généré)
-│
-├── 📄 server.js                        # Point d'entrée principal
-├── 📄 package.json                     # Dépendances et scripts
-├── 📄 package-lock.json                # Version exacte des dépendances
-├── 📄 .env                             # Variables d'environnement (ignoré)
-├── 📄 .env.example                     # Template variables d'environnement
-├── 📄 .gitignore                       # Fichiers ignorés par Git
-├── 📄 make-admin.js                    # Script promotion utilisateur admin
-├── 📄 README.md                        # Documentation du projet
-
-```
-
-
----
-
-## 🚀 Installation
-
-### Prérequis
-
-```bash
-# Vérifier les versions
-node --version    # v18.x ou supérieur
-npm --version     # v9.x ou supérieur
-mongod --version  # v7.x ou supérieur
-
-```
-
-## Étapes d'installation
-
-# 1. Cloner le projet
-git clone https://github.com/your-repo/tp9-auth-express-demo.git
-cd tp9-auth-express-demo
-
-# 2. Installer les dépendances
-npm install
-
-# 3. Configurer les variables d'environnement
-cp .env.example .env
-# Éditer .env avec vos valeurs
-
-# 4. Démarrer MongoDB
-# Windows
-net start MongoDB
-
-# Linux/Mac
-sudo systemctl start mongod
-
-# 5. Démarrer l'application
-npm run dev
-```
+# 🔐 TP9 - Authentification et Autorisation avec Node.js et Express
 
 ## ✨ Fonctionnalités
 
 ### Authentification
 
-- ✅ **JWT Tokens** - Access token (15 min) + Refresh token (7 jours)
-- ✅ **Sessions** - Stockage mémoire (développement)
-- ✅ **Hachage bcrypt** - Mots de passe sécurisés (12 rounds)
-- ✅ **Refresh tokens** - Renouvellement automatique
-- ✅ **Rate limiting** - 5 tentatives / 15 minutes
-- ✅ **Compte verrouillage** - Après 5 échecs consécutifs
+| Fonctionnalité | Description |
+|----------------|-------------|
+| ✅ **JWT Tokens** | Access token (15 min) + Refresh token (7 jours) |
+| ✅ **Sessions** | Stockage mémoire (développement) |
+| ✅ **Hachage bcrypt** | Mots de passe sécurisés (12 rounds) |
+| ✅ **Refresh tokens** | Renouvellement automatique |
+| ✅ **Rate limiting** | 5 tentatives / 15 minutes |
+| ✅ **Compte verrouillage** | Après 5 échecs consécutifs |
 
 ### Autorisation
 
-- ✅ **RBAC** - Rôles `user` et `admin`
-- ✅ **Routes protégées** - Middleware d'authentification
-- ✅ **Vérification rôles** - Accès basé sur les permissions
+| Fonctionnalité | Description |
+|----------------|-------------|
+| ✅ **RBAC** | Rôles `user` et `admin` |
+| ✅ **Routes protégées** | Middleware d'authentification |
+| ✅ **Vérification rôles** | Accès basé sur les permissions |
 
 ### Sécurité
 
-- ✅ **Helmet** - En-têtes HTTP sécurisés
-- ✅ **CORS** - Configuration cross-origin
-- ✅ **XSS Protection** - Nettoyage des entrées
-- ✅ **NoSQL Injection** - Sanitization des requêtes
-- ✅ **HTTP-only Cookies** - Refresh tokens sécurisés
+| Fonctionnalité | Description |
+|----------------|-------------|
+| ✅ **Helmet** | En-têtes HTTP sécurisés |
+| ✅ **CORS** | Configuration cross-origin |
+| ✅ **XSS Protection** | Nettoyage des entrées |
+| ✅ **NoSQL Injection** | Sanitization des requêtes |
+| ✅ **HTTP-only Cookies** | Refresh tokens sécurisés |
 
 ---
 
@@ -165,28 +90,76 @@ npm run dev
 
 ### Authentification JWT
 
-| Méthode | Endpoint | Description | Auth |
-|---------|----------|-------------|------|
+| Méthode | Endpoint | Description | Authentification |
+|:-------:|----------|-------------|:----------------:|
 | `POST` | `/api/auth/register-jwt` | Inscription | Public |
 | `POST` | `/api/auth/login-jwt` | Connexion | Public |
 | `GET` | `/api/auth/profile-jwt` | Profil utilisateur | Bearer |
 | `GET` | `/api/auth/refresh-token` | Rafraîchir token | Cookie |
 | `GET` | `/api/auth/logout-jwt` | Déconnexion | Bearer |
-| `GET` | `/api/auth/admin-only-jwt` | Zone admin | Bearer+Admin |
+| `GET` | `/api/auth/admin-only-jwt` | Zone admin | Bearer + Admin |
 
 ### Authentification Sessions
 
-| Méthode | Endpoint | Description | Auth |
-|---------|----------|-------------|------|
+| Méthode | Endpoint | Description | Authentification |
+|:-------:|----------|-------------|:----------------:|
 | `POST` | `/api/auth/register-session` | Inscription | Public |
 | `POST` | `/api/auth/login-session` | Connexion | Public |
 | `GET` | `/api/auth/profile-session` | Profil utilisateur | Session |
 | `GET` | `/api/auth/logout-session` | Déconnexion | Session |
-| `GET` | `/api/auth/admin-only` | Zone admin | Session+Admin |
+| `GET` | `/api/auth/admin-only` | Zone admin | Session + Admin |
 
 ### Utilitaires
 
 | Méthode | Endpoint | Description |
-|---------|----------|-------------|
+|:-------:|----------|-------------|
 | `GET` | `/health` | État du serveur |
 | `GET` | `/` | Documentation API |
+
+---
+
+## 🚀 Installation
+
+```bash
+# Cloner le projet
+git clone https://github.com/your-repo/tp9-auth-express-demo.git
+
+# Installer les dépendances
+npm install
+
+# Configurer les variables d'environnement
+cp .env.example .env
+
+# Démarrer le serveur
+npm run dev
+```
+## 🧪 Tests
+```
+# Inscription
+curl -X POST http://localhost:3000/api/auth/register-jwt \
+  -H "Content-Type: application/json" \
+  -d '{"username":"test","email":"test@test.com","password":"Test123!"}'
+
+# Connexion
+curl -X POST http://localhost:3000/api/auth/login-jwt \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@test.com","password":"Test123!"}'
+```
+## 📁 Structure du projet
+```
+
+tp9-auth-express-demo/
+├── config/           # Configuration
+├── controllers/      # Logique métier
+├── middlewares/      # Middlewares Express
+├── models/           # Modèles MongoDB
+├── routes/           # Routes API
+├── utils/            # Utilitaires
+├── public/           # Interface web
+├── .env.example      # Template variables
+├── make-admin.js     # Script promotion admin
+├── package.json      # Dépendances
+└── server.js         # Point d'entrée
+```
+
+
