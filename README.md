@@ -133,78 +133,60 @@ sudo systemctl start mongod
 # 5. Démarrer l'application
 npm run dev
 ```
+
 ## ✨ Fonctionnalités
 
-### 🔐 Authentification
+### Authentification
 
-| Statut | Fonctionnalité | Description |
-|:------:|----------------|-------------|
-| ✅ | JWT Tokens | Access token (15 min) + Refresh token (7 jours) |
-| ✅ | Sessions | Stockage mémoire (développement) |
-| ✅ | Hachage bcrypt | Mots de passe sécurisés (12 rounds) |
-| ✅ | Refresh tokens | Renouvellement automatique |
-| ✅ | Rate limiting | 5 tentatives / 15 minutes |
-| ✅ | Compte verrouillage | Après 5 échecs consécutifs |
+- ✅ **JWT Tokens** - Access token (15 min) + Refresh token (7 jours)
+- ✅ **Sessions** - Stockage mémoire (développement)
+- ✅ **Hachage bcrypt** - Mots de passe sécurisés (12 rounds)
+- ✅ **Refresh tokens** - Renouvellement automatique
+- ✅ **Rate limiting** - 5 tentatives / 15 minutes
+- ✅ **Compte verrouillage** - Après 5 échecs consécutifs
 
-### 🛡️ Autorisation
+### Autorisation
 
-| Statut | Fonctionnalité | Description |
-|:------:|----------------|-------------|
-| ✅ | RBAC | Rôles `user` et `admin` |
-| ✅ | Routes protégées | Middleware d'authentification |
-| ✅ | Vérification rôles | Accès basé sur les permissions |
+- ✅ **RBAC** - Rôles `user` et `admin`
+- ✅ **Routes protégées** - Middleware d'authentification
+- ✅ **Vérification rôles** - Accès basé sur les permissions
 
-### 🔒 Sécurité
+### Sécurité
 
-| Statut | Fonctionnalité | Description |
-|:------:|----------------|-------------|
-| ✅ | Helmet | En-têtes HTTP sécurisés |
-| ✅ | CORS | Configuration cross-origin |
-| ✅ | XSS Protection | Nettoyage des entrées |
-| ✅ | NoSQL Injection | Sanitization des requêtes |
-| ✅ | HTTP-only Cookies | Refresh tokens sécurisés |
+- ✅ **Helmet** - En-têtes HTTP sécurisés
+- ✅ **CORS** - Configuration cross-origin
+- ✅ **XSS Protection** - Nettoyage des entrées
+- ✅ **NoSQL Injection** - Sanitization des requêtes
+- ✅ **HTTP-only Cookies** - Refresh tokens sécurisés
 
 ---
 
 ## 📡 API Endpoints
 
-### 🔑 Authentification JWT
+### Authentification JWT
 
-| Méthode | Endpoint | Description | Auth | Statut |
-|:-------:|----------|-------------|:----:|:------:|
-| `POST` | `/api/auth/register-jwt` | Inscription | 🔓 | ✅ |
-| `POST` | `/api/auth/login-jwt` | Connexion | 🔓 | ✅ |
-| `GET` | `/api/auth/profile-jwt` | Profil utilisateur | 🔒 | ✅ |
-| `GET` | `/api/auth/refresh-token` | Rafraîchir token | 🍪 | ✅ |
-| `GET` | `/api/auth/logout-jwt` | Déconnexion | 🔒 | ✅ |
-| `GET` | `/api/auth/admin-only-jwt` | Zone admin | 👑 | ✅ |
+| Méthode | Endpoint | Description | Auth |
+|---------|----------|-------------|------|
+| `POST` | `/api/auth/register-jwt` | Inscription | Public |
+| `POST` | `/api/auth/login-jwt` | Connexion | Public |
+| `GET` | `/api/auth/profile-jwt` | Profil utilisateur | Bearer |
+| `GET` | `/api/auth/refresh-token` | Rafraîchir token | Cookie |
+| `GET` | `/api/auth/logout-jwt` | Déconnexion | Bearer |
+| `GET` | `/api/auth/admin-only-jwt` | Zone admin | Bearer+Admin |
 
-### 🍪 Authentification Sessions
+### Authentification Sessions
 
-| Méthode | Endpoint | Description | Auth | Statut |
-|:-------:|----------|-------------|:----:|:------:|
-| `POST` | `/api/auth/register-session` | Inscription | 🔓 | ✅ |
-| `POST` | `/api/auth/login-session` | Connexion | 🔓 | ✅ |
-| `GET` | `/api/auth/profile-session` | Profil utilisateur | 🔒 | ⚠️ |
-| `GET` | `/api/auth/logout-session` | Déconnexion | 🔒 | ✅ |
-| `GET` | `/api/auth/admin-only` | Zone admin | 👑 | ⚠️ |
+| Méthode | Endpoint | Description | Auth |
+|---------|----------|-------------|------|
+| `POST` | `/api/auth/register-session` | Inscription | Public |
+| `POST` | `/api/auth/login-session` | Connexion | Public |
+| `GET` | `/api/auth/profile-session` | Profil utilisateur | Session |
+| `GET` | `/api/auth/logout-session` | Déconnexion | Session |
+| `GET` | `/api/auth/admin-only` | Zone admin | Session+Admin |
 
-### 🛠️ Utilitaires
+### Utilitaires
 
-| Méthode | Endpoint | Description | Statut |
-|:-------:|----------|-------------|:------:|
-| `GET` | `/health` | État du serveur | ✅ |
-| `GET` | `/` | Documentation API | ✅ |
-
----
-
-## 📈 Légende
-
-| Icône | Signification |
-|:-----:|---------------|
-| 🔓 | Accès public |
-| 🔒 | Authentification requise |
-| 🍪 | Cookie requis |
-| 👑 | Rôle admin requis |
-| ✅ | Fonctionnel |
-| ⚠️ | À améliorer |
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `GET` | `/health` | État du serveur |
+| `GET` | `/` | Documentation API |
