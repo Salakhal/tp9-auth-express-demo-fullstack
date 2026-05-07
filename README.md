@@ -118,7 +118,7 @@
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ```bash
 # Cloner le projet
@@ -133,7 +133,8 @@ cp .env.example .env
 # Démarrer le serveur
 npm run dev
 ```
-## 🧪 Tests
+
+##  Tests
 ```
 # Inscription
 curl -X POST http://localhost:3000/api/auth/register-jwt \
@@ -147,7 +148,6 @@ curl -X POST http://localhost:3000/api/auth/login-jwt \
 ```
 ## 📁 Structure du projet
 ```
-
 tp9-auth-express-demo/
 ├── config/           # Configuration
 ├── controllers/      # Logique métier
