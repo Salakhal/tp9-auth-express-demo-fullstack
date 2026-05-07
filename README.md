@@ -146,20 +146,30 @@ curl -X POST http://localhost:3000/api/auth/login-jwt \
   -H "Content-Type: application/json" \
   -d '{"email":"test@test.com","password":"Test123!"}'
 ```
-## 📁 Structure du projet
-```
-tp9-auth-express-demo/
-├── config/           # Configuration
-├── controllers/      # Logique métier
-├── middlewares/      # Middlewares Express
-├── models/           # Modèles MongoDB
-├── routes/           # Routes API
-├── utils/            # Utilitaires
-├── public/           # Interface web
-├── .env.example      # Template variables
-├── make-admin.js     # Script promotion admin
-├── package.json      # Dépendances
-└── server.js         # Point d'entrée
-```
+
+ ## 🎥 Démo du Projet
 
 
+
+
+
+
+
+https://github.com/user-attachments/assets/44efed02-0826-49a5-a639-95c0a1015700
+
+
+
+
+
+## 👤 Auteur
+
+* **École Normale Supérieure de Marrakech**
+  
+* **Réalisé par :** SALMA LAKHAL
+  
+* **Filière  :** CLE_INFO_S5
+
+  
+* **Encadré par :** Pr. Mohamed LACHGAR
+
+* **Cours :** `Développement web full-stack avec JavaScript`
