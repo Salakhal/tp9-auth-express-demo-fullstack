@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système d'authentification</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .tab { display: flex; gap: 10px; margin-bottom: 30px; }
+        .tab button {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .tab button.active { background: #667eea; color: white; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button[type="submit"]:hover { background: #5a67d8; }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .message.success { background: #d4edda; color: #155724; display: block; }
+        .message.error { background: #f8d7da; color: #721c24; display: block; }
+        .profile-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        .profile-info.show { display: block; }
+        .logout-btn {
+            margin-top: 20px;
+            background: #dc3545;
+        }
+        .logout-btn:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Authentification</h1>
+        
+        <div class="tab">
+            <button id="loginTab" class="active">Connexion</button>
+            <button id="registerTab">Inscription</button>
+        </div>
+
+        <!-- Formulaire de connexion -->
+        <form id="loginForm">
+            <div class="form-group">
+                <label>📧 Email</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+                <label>🔒 Mot de passe</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">Se connecter</button>
+        </form>
+
+        <!-- Formulaire d'inscription -->
+        <form id="registerForm" style="display:none">
+            <div class="form-group">
+                <label>👤 Nom d'utilisateur</label>
+                <input type="text" id="registerUsername" required>
+            </div>
+            <div class="form-group">
+                <label>📧 Email</label>
+                <input type="email" id="registerEmail" required>
+            </div>
+            <div class="form-group">
+                <label>🔒 Mot de passe</label>
+                <input type="password" id="registerPassword" required>
+            </div>
+            <button type="submit">S'inscrire</button>
+        </form>
+
+        <div id="message" class="message"></div>
+        
+        <div id="profileInfo" class="profile-info">
+            <h3>👤 Mon profil</h3>
+            <p><strong>Nom:</strong> <span id="profileUsername"></span></p>
+            <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+            <p><strong>Rôle:</strong> <span id="profileRole"></span></p>
+            <button id="logoutBtn" class="logout-btn">Se déconnecter</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/auth';
+        let accessToken = localStorage.getItem('accessToken');
+
+        // Gestion des onglets
+        document.getElementById('loginTab').addEventListener('click', () => {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginTab').classList.add('active');
+            document.getElementById('registerTab').classList.remove('active');
+        });
+
+        document.getElementById('registerTab').addEventListener('click', () => {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('registerTab').classList.add('active');
+            document.getElementById('loginTab').classList.remove('active');
+        });
+
+        // Inscription
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/register-jwt`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Inscription réussie ! Connectez-vous maintenant.', 'success');
+                    document.getElementById('loginTab').click();
+                } else {
+                    showMessage(data.message || 'Erreur lors de l\'inscription', 'error');
+                }
+            } catch (error) {
+                showMessage('Erreur réseau', 'error');
+            }
+        });
+
+        // Connexion
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/login-jwt`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    accessToken = data.accessToken;
+                    localStorage.setItem('accessToken', accessToken);
+                    showMessage('Connexion réussie !', 'success');
+                    loadProfile();
+                } else {
+                    showMessage(data.message || 'Email ou mot de passe incorrect', 'error');
+                }
+            } catch (error) {
+                showMessage('Erreur réseau', 'error');
+            }
+        });
+
+        // Charger le profil
+        async function loadProfile() {
+            if (!accessToken) return;
+
+            try {
+                const response = await fetch(`${API_URL}/profile-jwt`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('profileUsername').textContent = data.data.username;
+                    document.getElementById('profileEmail').textContent = data.data.email;
+                    document.getElementById('profileRole').textContent = data.data.role;
+                    document.getElementById('profileInfo').classList.add('show');
+                    document.querySelector('.tab').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('registerForm').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Erreur chargement profil', error);
+            }
+        }
+
+        // Déconnexion
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch(`${API_URL}/logout-jwt`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                localStorage.removeItem('accessToken');
+                accessToken = null;
+                document.getElementById('profileInfo').classList.remove('show');
+                document.querySelector('.tab').style.display = 'flex';
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('loginForm').reset();
+                showMessage('Déconnecté avec succès', 'success');
+            } catch (error) {
+                console.error('Erreur déconnexion', error);
+            }
+        });
+
+        function showMessage(msg, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = msg;
+            messageDiv.className = `message ${type}`;
+            setTimeout(() => {
+                messageDiv.className = 'message';
+            }, 3000);
+        }
+
+        // Charger le profil si déjà connecté
+        if (accessToken) {
+            loadProfile();
+        }
+    </script>
+</body>
+</html>
